@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { Box, CssBaseline, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import React, { useState } from "react";
+import { Box, CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import {
@@ -13,20 +13,46 @@ import {
   aprendizService,
   crearServicio,
   formInitialState
-} from "../services/aprendizService.js";
+} from "../services/aprendizService";
 
 const theme = createTheme({
   palette: {
     mode: "dark",
+<<<<<<< HEAD
+    primary: { main: "#22d3ee" },       // cian
+    secondary: { main: "#a78bfa" },     // violeta
+    error: { main: "#ef4444" },
+    background: { default: "#0b1220", paper: "#111827" }, // dark limpio
+=======
     primary: { main: "#22d3ee" },
     secondary: { main: "#a78bfa" },
     error: { main: "#ef4444" },
     background: { default: "#0b1220", paper: "#111827" },
+>>>>>>> Feature/Cambios
     text: { primary: "#e5e7eb", secondary: "#94a3b8" }
   }
 });
 
+<<<<<<< HEAD
+
+
+const inputSX = {
+  bgcolor: "#f3f4f6",       // fondo claro para inputs
+  borderRadius: 1,
+  input: { color: "#111827" },
+  "& .MuiInputLabel-root": { color: "#374151" },
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#cbd5e1" },
+  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#94a3b8" },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#22d3ee" }
+};
+
+const ListaAprendices = () => {
+  const API_BASE = "http://localhost:8080/api/v1/aprendiz";
+  //const API_BASE = "https://backadso-production.up.railway.app/api/v1/aprendiz"
+
+=======
 const PrincipalView = () => {
+>>>>>>> Feature/Cambios
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState(formInitialState);
@@ -57,6 +83,47 @@ const PrincipalView = () => {
     setMensaje(null);
   };
 
+<<<<<<< HEAD
+  const fetchTodos = async () => {  
+    try {
+      setLoading(true);
+      const res = await axios.get(API_BASE);
+      setData(res.data || []);
+    } catch (e) {
+      console.error("Error cargando aprendices:", e);
+      setData([]);
+    } finally { setLoading(false); }
+  };
+
+  const fetchPorId = async () => {
+  if (!idFiltro) return;
+  try {
+    setLoading(true);
+    const res = await axios.get(`${API_BASE}/${idFiltro}`);
+    setData(res.data ? [res.data] : []);
+
+    // Rellenar el formulario con los datos traídos
+    if (res.data) {
+      setForm({
+        nombre: res.data.nombre ?? "",
+        apellido: res.data.apellido ?? "",
+        email: res.data.email ?? "",
+        telefono: res.data.telefono ?? "",
+        direccion: res.data.direccion ?? "",
+        cedula: res.data.cedula ?? "",
+        tipoDePrograma: res.data.tipoDePrograma ?? "",
+        programa: res.data.programa ?? "",
+        ficha: res.data.ficha ?? "",
+        regional: res.data.regional ?? ""
+      });
+    }
+  } catch {
+    setData([]);
+  } finally {
+    setLoading(false);
+  }
+};
+=======
   /* ---------- Handlers ---------- */
   const fetchTodos = async () => {
     try {
@@ -114,6 +181,7 @@ const PrincipalView = () => {
       setLoading(false);
     }
   };
+>>>>>>> Feature/Cambios
 
   const crearAprendiz = async () => {
     if (!form.primerNombre?.trim() || !form.primerApellido?.trim() || !form.correo?.trim() || !form.cedula?.trim()) {
@@ -122,8 +190,7 @@ const PrincipalView = () => {
     }
     try {
       setLoading(true);
-      setMensaje(null);
-      await servicio.crear(form);
+      await aprendizService.crear(form);
       setForm(formInitialState);
       await fetchTodos();
       ok("Aprendiz creado.");
@@ -133,11 +200,11 @@ const PrincipalView = () => {
     } finally {
       setLoading(false);
     }
+>>>>>>> Feature/Cambios
   };
 
   const eliminarPorId = async () => {
     if (!idFiltro) return;
-    if (!window.confirm(`¿Eliminar el aprendiz con ID ${idFiltro}?`)) return;
     try {
       setLoading(true);
       setMensaje(null);
@@ -172,21 +239,11 @@ const PrincipalView = () => {
   };
 
   /* ---------- Render ---------- */
+>>>>>>> Feature/Cambios
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ mt: 4, px: { xs: 2, md: 4 } }}>
-        <ToggleButtonGroup
-          value={bd}
-          exclusive
-          onChange={cambiarBd}
-          aria-label="Base de datos"
-          sx={{ mb: 2 }}
-        >
-          <ToggleButton value="mysql" aria-label="MySQL">MySQL</ToggleButton>
-          <ToggleButton value="mongodb" aria-label="MongoDB">MongoDB</ToggleButton>
-        </ToggleButtonGroup>
-
         <ActionBar
           loading={loading}
           idFiltro={idFiltro}
@@ -206,10 +263,14 @@ const PrincipalView = () => {
           loading={loading}
         />
 
-        <AprendizTable data={data} onSelect={seleccionarFila} />
+        <AprendizTable data={data} />
       </Box>
     </ThemeProvider>
   );
 };
 
+<<<<<<< HEAD
+export default ListaAprendices;
+=======
 export default PrincipalView;
+>>>>>>> Feature/Cambios
