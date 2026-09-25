@@ -62,7 +62,7 @@ const PrincipalView = () => {
           programa: res.programa ?? "",
           ficha: res.ficha ?? "",
           regional: res.regional ?? ""
-        })
+        });
       }
     } catch {
       setData([]);
