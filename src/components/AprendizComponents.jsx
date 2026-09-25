@@ -1,7 +1,7 @@
 import React from "react";
 import {
   Paper, Table, TableBody, TableCell, TableContainer, TableHead,
-  TableRow, Typography, Button, TextField, Stack
+  TableRow, Typography, Button, TextField, Stack, Alert
 } from "@mui/material";
 
 // Estilo compartido para inputs
@@ -57,10 +57,12 @@ export const AprendizForm = ({ form, setForm, onCrear, loading }) => {
         Crear aprendiz
       </Typography>
       <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ flexWrap: "wrap" }}>
-        <TextField label="Nombre" value={form.nombre} onChange={handleChange("nombre")} sx={{ ...inputSX, flex: 1 }} />
-        <TextField label="Apellido" value={form.apellido} onChange={handleChange("apellido")} sx={{ ...inputSX, flex: 1 }} />
-        <TextField label="Email" value={form.email} onChange={handleChange("email")} sx={{ ...inputSX, flex: 1.2 }} />
-        <TextField label="Teléfono" value={form.telefono} onChange={handleChange("telefono")} sx={{ ...inputSX, flex: 1 }} />
+        <TextField label="Primer Nombre" value={form.primerNombre} onChange={handleChange("primerNombre")} sx={{ ...inputSX, flex: 1 }} />
+        <TextField label="Segundo Nombre" value={form.segundoNombre} onChange={handleChange("segundoNombre")} sx={{ ...inputSX, flex: 1 }} />
+        <TextField label="Primer Apellido" value={form.primerApellido} onChange={handleChange("primerApellido")} sx={{ ...inputSX, flex: 1 }} />
+        <TextField label="Segundo Apellido" value={form.segundoApellido} onChange={handleChange("segundoApellido")} sx={{ ...inputSX, flex: 1 }} />
+        <TextField label="Correo" value={form.correo} onChange={handleChange("correo")} sx={{ ...inputSX, flex: 1.2 }} />
+        <TextField label="Celular" value={form.celular} onChange={handleChange("celular")} sx={{ ...inputSX, flex: 1 }} />
         <TextField label="Dirección" value={form.direccion} onChange={handleChange("direccion")} sx={{ ...inputSX, flex: 1.6 }} />
         <TextField label="Cedula" value={form.cedula} onChange={handleChange("cedula")} sx={{ ...inputSX, flex: 1 }} />
         <TextField label="Tipo de Programa" value={form.tipoDePrograma} onChange={handleChange("tipoDePrograma")} sx={{ ...inputSX, flex: 1.2 }} />
@@ -75,13 +77,22 @@ export const AprendizForm = ({ form, setForm, onCrear, loading }) => {
   );
 };
 
+/* ===================== Mensaje ===================== */
+export const Mensaje = ({ mensaje }) => (
+  mensaje?.texto ? (
+    <Alert severity={mensaje.tipo === "error" ? "error" : "success"} sx={{ mb: 2 }}>
+      {mensaje.texto}
+    </Alert>
+  ) : null
+);
+
 /* ===================== Tabla ===================== */
 const HEADERS = [
-  "ID", "Nombre", "Apellido", "Email", "Teléfono", "Dirección",
-  "Cedula", "Tipo de Programa", "Programa", "Ficha", "Regional"
+  "ID", "Primer Nombre", "Segundo Nombre", "Primer Apellido", "Segundo Apellido",
+  "Correo", "Celular", "Dirección", "Cedula", "Tipo de Programa", "Programa", "Ficha", "Regional"
 ];
 
-export const AprendizTable = ({ data }) => (
+export const AprendizTable = ({ data, onSelect }) => (
   <TableContainer component={Paper} elevation={3} sx={{ border: "1px solid #334155", bgcolor: "background.paper" }}>
     <Table>
       <TableHead>
@@ -95,16 +106,21 @@ export const AprendizTable = ({ data }) => (
         {data.map((row, i) => (
           <TableRow
             key={row.id ?? i}
+            hover
+            onClick={() => onSelect?.(row)}
             sx={{
+              cursor: onSelect ? "pointer" : "default",
               backgroundColor: i % 2 === 0 ? "#0f172a" : "#111827",
               "&:hover": { backgroundColor: "#1f2937" }
             }}
           >
             <TableCell sx={{ color: "text.primary" }}>{row.id}</TableCell>
-            <TableCell sx={{ color: "text.primary" }}>{row.nombre}</TableCell>
-            <TableCell sx={{ color: "text.primary" }}>{row.apellido}</TableCell>
-            <TableCell sx={{ color: "text.primary" }}>{row.email}</TableCell>
-            <TableCell sx={{ color: "text.primary" }}>{row.telefono}</TableCell>
+            <TableCell sx={{ color: "text.primary" }}>{row.primerNombre}</TableCell>
+            <TableCell sx={{ color: "text.primary" }}>{row.segundoNombre}</TableCell>
+            <TableCell sx={{ color: "text.primary" }}>{row.primerApellido}</TableCell>
+            <TableCell sx={{ color: "text.primary" }}>{row.segundoApellido}</TableCell>
+            <TableCell sx={{ color: "text.primary" }}>{row.correo}</TableCell>
+            <TableCell sx={{ color: "text.primary" }}>{row.celular}</TableCell>
             <TableCell sx={{ color: "text.primary" }}>{row.direccion}</TableCell>
             <TableCell sx={{ color: "text.primary" }}>{row.cedula}</TableCell>
             <TableCell sx={{ color: "text.primary" }}>{row.tipoDePrograma}</TableCell>
@@ -115,7 +131,7 @@ export const AprendizTable = ({ data }) => (
         ))}
         {data.length === 0 && (
           <TableRow>
-            <TableCell colSpan={11} align="center" sx={{ color: "text.secondary" }}>
+            <TableCell colSpan={13} align="center" sx={{ color: "text.secondary" }}>
               Sin registros
             </TableCell>
           </TableRow>
