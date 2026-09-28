@@ -6,7 +6,7 @@ import {
   ActionBar,
   AprendizForm,
   AprendizTable
-} from "../components/aprendizComponents";
+} from "../components/AprendizComponents";
 
 import {
   aprendizService,
