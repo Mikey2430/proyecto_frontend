@@ -52,10 +52,12 @@ const PrincipalView = () => {
       setData(res ? [res] : []);
       if (res) {
         setForm({
-          nombre: res.nombre ?? "",
-          apellido: res.apellido ?? "",
-          email: res.email ?? "",
-          telefono: res.telefono ?? "",
+          primerNombre: res.primerNombre ?? "",
+          segundoNombre: res.segundoNombre ?? "",
+          primerApellido: res.primerApellido ?? "",
+          segundoApellido: res.segundoApellido ?? "",
+          correo: res.correo ?? "",
+          celular: res.celular ?? "",
           direccion: res.direccion ?? "",
           cedula: res.cedula ?? "",
           tipoDePrograma: res.tipoDePrograma ?? "",

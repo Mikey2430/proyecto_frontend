@@ -32,12 +32,14 @@ export const aprendizService = {
   }
 };
 
-// Estado inicial del formulario
+// Estado inicial del formulario (mismos nombres que el backend: AprendizEntity)
 export const formInitialState = {
-  nombre: "",
-  apellido: "",
-  email: "",
-  telefono: "",
+  primerNombre: "",
+  segundoNombre: "",
+  primerApellido: "",
+  segundoApellido: "",
+  correo: "",
+  celular: "",
   direccion: "",
   cedula: "",
   tipoDePrograma: "",
