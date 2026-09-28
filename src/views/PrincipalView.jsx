@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Box, CssBaseline } from "@mui/material";
+import React, { useState, useEffect, useMemo } from "react";
+import { Box, CssBaseline, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import {
@@ -10,6 +10,7 @@ import {
 
 import {
   aprendizService,
+  crearServicio,
   formInitialState
 } from "../services/aprendizService";
 
@@ -29,13 +30,25 @@ const PrincipalView = () => {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState(formInitialState);
   const [idFiltro, setIdFiltro] = useState("");
+  // BD activa: "mysql" o "mongodb". El switch cambia a dónde van crear/actualizar/eliminar
+  const [bd, setBd] = useState("mysql");
+  const servicio = useMemo(() => (bd === "mongodb" ? crearServicio("mongodb") : aprendizService), [bd]);
+
+  // Cambiar de BD limpia todo y recarga de la otra base
+  const cambiarBd = (_, nuevaBd) => {
+    if (!nuevaBd || nuevaBd === bd) return;
+    setBd(nuevaBd);
+    setIdFiltro("");
+    setForm(formInitialState);
+    setData([]);
+  };
 
   /* ---------- Handlers ---------- */
   const fetchTodos = async () => {
     try {
       setLoading(true);
-      const result = await aprendizService.fetchTodos();
-      setData(result);
+      const result = await servicio.fetchTodos();
+      setData(Array.isArray(result) ? result : []);
     } catch (e) {
       console.error("Error cargando aprendices:", e);
       setData([]);
@@ -48,7 +61,7 @@ const PrincipalView = () => {
     if (!idFiltro) return;
     try {
       setLoading(true);
-      const res = await aprendizService.fetchPorId(idFiltro);
+      const res = await servicio.fetchPorId(idFiltro);
       setData(res ? [res] : []);
       if (res) {
         setForm({
@@ -76,7 +89,7 @@ const PrincipalView = () => {
   const crearAprendiz = async () => {
     try {
       setLoading(true);
-      await aprendizService.crear(form);
+      await servicio.crear(form);
       setForm(formInitialState);
       await fetchTodos();
     } catch (e) {
@@ -90,7 +103,7 @@ const PrincipalView = () => {
     if (!idFiltro) return;
     try {
       setLoading(true);
-      await aprendizService.eliminar(idFiltro);
+      await servicio.eliminar(idFiltro);
       await fetchTodos();
     } catch (e) {
       console.error("Error eliminando aprendiz:", e);
@@ -103,7 +116,7 @@ const PrincipalView = () => {
     if (!idFiltro) return;
     try {
       setLoading(true);
-      await aprendizService.actualizar(idFiltro, form);
+      await servicio.actualizar(idFiltro, form);
       setForm(formInitialState);
       await fetchTodos();
     } catch (e) {
@@ -114,10 +127,27 @@ const PrincipalView = () => {
   };
 
   /* ---------- Render ---------- */
+  // Carga inicial y recarga al cambiar de BD
+  useEffect(() => {
+    fetchTodos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bd]);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ mt: 4, px: { xs: 2, md: 4 } }}>
+        <ToggleButtonGroup
+          value={bd}
+          exclusive
+          onChange={cambiarBd}
+          aria-label="Base de datos"
+          sx={{ mb: 2 }}
+        >
+          <ToggleButton value="mysql" aria-label="MySQL">MySQL</ToggleButton>
+          <ToggleButton value="mongodb" aria-label="MongoDB">MongoDB</ToggleButton>
+        </ToggleButtonGroup>
+
         <ActionBar
           loading={loading}
           idFiltro={idFiltro}
