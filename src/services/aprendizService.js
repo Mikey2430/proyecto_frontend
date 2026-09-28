@@ -1,7 +1,7 @@
 import axios from "axios";
 
 //const API_BASE = "http://localhost:8080/api/v1/aprendiz";
-const API_BASE = "https://proyecto-backend-gjry.onrender.com/api/v1/aprendiz";
+const API_BASE = "https://proyecto-backend-wj4f.onrender.com/api/v1/aprendiz";
 
 const headers = { "Content-Type": "application/json" };
 
