@@ -5,7 +5,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import {
   ActionBar,
   AprendizForm,
-  AprendizTable
+  AprendizTable,
+  Mensaje
 } from "../components/AprendizComponents";
 
 import {
@@ -30,6 +31,13 @@ const PrincipalView = () => {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState(formInitialState);
   const [idFiltro, setIdFiltro] = useState("");
+  const [mensaje, setMensaje] = useState(null);
+  const ok = (texto) => setMensaje({ texto, tipo: "ok" });
+  const fail = (texto) => setMensaje({ texto, tipo: "error" });
+  const sinConexion = (e) => e?.code === "ERR_NETWORK" || e?.response?.status === 403;
+  const errorCrear = (e) =>
+    sinConexion(e) ? "Sin conexión con el servidor."
+    : "No se pudo crear. Correo o cédula duplicados.";
   // BD activa: "mysql" o "mongodb". El switch cambia a dónde van crear/actualizar/eliminar
   const [bd, setBd] = useState("mysql");
   const servicio = useMemo(() => (bd === "mongodb" ? crearServicio("mongodb") : aprendizService), [bd]);
@@ -41,17 +49,20 @@ const PrincipalView = () => {
     setIdFiltro("");
     setForm(formInitialState);
     setData([]);
+    setMensaje(null);
   };
 
   /* ---------- Handlers ---------- */
   const fetchTodos = async () => {
     try {
       setLoading(true);
+      setMensaje(null);
       const result = await servicio.fetchTodos();
       setData(Array.isArray(result) ? result : []);
     } catch (e) {
       console.error("Error cargando aprendices:", e);
       setData([]);
+      fail("No se pudo cargar la lista. Revisa tu conexión.");
     } finally {
       setLoading(false);
     }
@@ -61,9 +72,11 @@ const PrincipalView = () => {
     if (!idFiltro) return;
     try {
       setLoading(true);
+      setMensaje(null);
       const res = await servicio.fetchPorId(idFiltro);
       setData(res ? [res] : []);
       if (res) {
+        ok("Aprendiz encontrado.");
         setForm({
           primerNombre: res.primerNombre ?? "",
           segundoNombre: res.segundoNombre ?? "",
@@ -79,8 +92,9 @@ const PrincipalView = () => {
           regional: res.regional ?? ""
         });
       }
-    } catch {
+    } catch (e) {
       setData([]);
+      fail(e?.response?.status === 404 ? "No existe un aprendiz con ese ID." : "No se pudo buscar. Revisa tu conexión.");
     } finally {
       setLoading(false);
     }
@@ -89,11 +103,14 @@ const PrincipalView = () => {
   const crearAprendiz = async () => {
     try {
       setLoading(true);
+      setMensaje(null);
       await servicio.crear(form);
       setForm(formInitialState);
       await fetchTodos();
+      ok("Aprendiz creado correctamente.");
     } catch (e) {
       console.error("Error creando aprendiz:", e);
+      fail(errorCrear(e));
     } finally {
       setLoading(false);
     }
@@ -103,10 +120,13 @@ const PrincipalView = () => {
     if (!idFiltro) return;
     try {
       setLoading(true);
+      setMensaje(null);
       await servicio.eliminar(idFiltro);
       await fetchTodos();
+      ok("Aprendiz eliminado correctamente.");
     } catch (e) {
       console.error("Error eliminando aprendiz:", e);
+      fail(e?.response?.status === 404 ? "No existe un aprendiz con ese ID." : "No se pudo eliminar. Revisa tu conexión.");
     } finally {
       setLoading(false);
     }
@@ -116,11 +136,14 @@ const PrincipalView = () => {
     if (!idFiltro) return;
     try {
       setLoading(true);
+      setMensaje(null);
       await servicio.actualizar(idFiltro, form);
       setForm(formInitialState);
       await fetchTodos();
+      ok("Aprendiz actualizado correctamente.");
     } catch (e) {
       console.error("Error actualizando aprendiz:", e.response?.data || e.message);
+      fail(e?.response?.status === 404 ? "No existe un aprendiz con ese ID." : "No se pudo actualizar. Revisa tu conexión.");
     } finally {
       setLoading(false);
     }
@@ -157,6 +180,8 @@ const PrincipalView = () => {
           onEliminar={eliminarPorId}
           onActualizar={actualizarPorId}
         />
+
+        <Mensaje mensaje={mensaje} />
 
         <AprendizForm
           form={form}

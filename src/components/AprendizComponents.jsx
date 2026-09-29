@@ -1,8 +1,17 @@
 import React from "react";
 import {
   Paper, Table, TableBody, TableCell, TableContainer, TableHead,
-  TableRow, Typography, Button, TextField, Stack
+  TableRow, Typography, Button, TextField, Stack, Alert
 } from "@mui/material";
+
+/* ===================== Mensaje de peticiones ===================== */
+export const Mensaje = ({ mensaje }) => (
+  mensaje?.texto ? (
+    <Alert severity={mensaje.tipo === "error" ? "error" : "success"} sx={{ mb: 2 }}>
+      {mensaje.texto}
+    </Alert>
+  ) : null
+);
 
 // Estilo compartido para inputs
 export const inputSX = {
